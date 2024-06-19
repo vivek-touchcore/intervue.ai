@@ -24,4 +24,10 @@ export const message = pgTable('message', {
     createdAt: timestamp('created_at').notNull().defaultNow()
 })
 
+export const transcription = pgTable('transcription', {
+    id: uuid('id').defaultRandom().primaryKey(),
+    text: text('text'),
+    fileId: serial('file_id').references(() => file.id),
+})
+
 export type fileType = typeof file.$inferSelect;

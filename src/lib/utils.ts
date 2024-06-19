@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { FetchOptions, Utterance } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -18,3 +19,54 @@ export function getBaseUrl() {
 	// assume localhost
 	return `http://localhost:${process.env.PORT ?? 3000}`;
 }
+
+
+export const poll = <T>(
+    url: string,
+    options: FetchOptions,
+    checkCondition: (data: T) => boolean,
+    interval: number = 2000
+): Promise<T> => new Promise((resolve, reject) => {
+    const poller = async () => {
+        try {
+            const response = await fetch(url, options);
+            const data: T = await response.json();
+
+            if (checkCondition(data)) {
+                resolve(data);
+            } else {
+                setTimeout(poller, interval);
+            }
+        } catch (error) {
+            reject(error);
+        }
+    };
+
+    poller();
+});
+
+export const formatTime = (time: number): string => {
+    const minutes = Math.floor(time / 60);
+    const seconds = (time % 60).toFixed(3);
+    return `${minutes}:${seconds.padStart(6, '0')}`;
+};
+
+export const convertUtterancesToText = (utterances: Utterance[]): string => {
+    let result = '';
+	let previousSpeaker = -1;
+    for (let i = 0; i < utterances.length; i++) {
+        const utterance = utterances[i];
+        const startTime = formatTime(utterance.start);
+        
+		if(previousSpeaker !== utterance.speaker) {
+			result += `\n\n`;
+			result += `SPEAKER ${utterance.speaker} | ${startTime}\n`
+		}
+
+		
+        result += `${utterance.text}  `;
+		previousSpeaker = utterance.speaker;
+    }
+
+    return result.trim();
+};
