@@ -1,4 +1,5 @@
 
+import { Transcript } from '@/lib/types';
 import {pgTable, boolean, pgEnum, serial, text,  varchar, timestamp, uuid, integer, json, jsonb} from 'drizzle-orm/pg-core';
 
 export const uploadStatusEnum = pgEnum("upload_status", ["PENDING", "PROCESSING", "FAILED", "SUCCESS"])
@@ -26,7 +27,7 @@ export const message = pgTable('message', {
 
 export const transcription = pgTable('transcription', {
     id: uuid('id').defaultRandom().primaryKey(),
-    transcript: jsonb('transcript'),
+    transcript: jsonb('transcript').$type<Transcript[]>(),
     fileId: serial('file_id').references(() => file.id),
 })
 

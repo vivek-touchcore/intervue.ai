@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { convertUtterancesToJson, convertUtterancesToText, poll } from "@/lib/utils";
+import { chunkArray, convertUtterancesToJson, convertUtterancesToText, poll } from "@/lib/utils";
 import { GladiaResponse } from "@/lib/types";
 import { db } from "@/server/db/db";
 import { file, transcription } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
+import { model } from "@/lib/genAI";
+import { Client } from "@upstash/qstash";
+
+const qstashClient = new Client({
+	token: process.env.QSTASH_TOKEN!,
+});
+
 
 export const POST = async (req: NextRequest) => {
 	const { url, access_token, id: fileId }: { url: string; access_token: string; id: number } = await req.json();
@@ -45,14 +52,23 @@ export const POST = async (req: NextRequest) => {
 			},
 		} = gladiaResult;
 
-        const transcript = convertUtterancesToJson(utterances);
-        
-		await db.insert(transcription).values({ fileId: fileId, transcript: transcript });
+		const transcript = convertUtterancesToJson(utterances);
 
-        
+		const transciptions = await db.insert(transcription).values({ fileId: fileId, transcript: transcript }).returning();
+
+        await qstashClient.publishJSON({
+				url: `${process.env.NEXT_PUBLIC_URL}/api/generate-summary`,
+				body: {
+					access_token: access_token,
+					fileId: fileId,
+                    transcriptionId: transciptions[0].id
+				},
+				method: "POST",
+			});
+
 		return NextResponse.json({}, { status: 200 });
 	} catch (e) {
-        console.log(e);
+		console.log(e);
 		await db.update(file).set({ uploadStatus: "FAILED" }).where(eq(file.id, fileId));
 		return NextResponse.json({}, { status: 400 });
 	}

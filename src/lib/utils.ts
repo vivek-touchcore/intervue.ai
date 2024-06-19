@@ -100,3 +100,13 @@ export const convertUtterancesToJson = (utterances: Utterance[]) => {
 
 	return result;
 };
+
+export const chunkArray = (array: string[], chunkSize: number): { text: string }[] => {
+    const chunks: { text: string }[] = [];
+    
+    for (let i = 0; i < array.length; i += chunkSize) {
+        chunks.push({ text: array.slice(i, i + chunkSize).join("\n") });
+    }
+    
+    return chunks;
+}
