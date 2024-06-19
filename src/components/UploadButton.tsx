@@ -30,7 +30,7 @@ const UploadDropzone = () => {
 				});
 			}
 			setIsUploading(false);
-			router.push(`/dashboard/${file.serverData.id}`);
+			// router.push(`/dashboard/${file.serverData.id}`);
 		},
 		onUploadError: (error) => {
 			setIsUploading(false);
