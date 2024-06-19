@@ -1,5 +1,5 @@
 
-import {pgTable, boolean, pgEnum, serial, text,  varchar, timestamp, uuid, integer} from 'drizzle-orm/pg-core';
+import {pgTable, boolean, pgEnum, serial, text,  varchar, timestamp, uuid, integer, json, jsonb} from 'drizzle-orm/pg-core';
 
 export const uploadStatusEnum = pgEnum("upload_status", ["PENDING", "PROCESSING", "FAILED", "SUCCESS"])
 
@@ -26,7 +26,7 @@ export const message = pgTable('message', {
 
 export const transcription = pgTable('transcription', {
     id: uuid('id').defaultRandom().primaryKey(),
-    text: text('text'),
+    transcript: jsonb('transcript'),
     fileId: serial('file_id').references(() => file.id),
 })
 

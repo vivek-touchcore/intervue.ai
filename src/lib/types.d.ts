@@ -66,3 +66,9 @@ export type GladiaResponse = {
     request_params: RequestParams;
     result: Result;
 };
+
+export type Transcript = {
+    speaker: number;
+    startTime: string;
+    text: string;
+}

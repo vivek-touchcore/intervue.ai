@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { convertUtterancesToText, poll } from "@/lib/utils";
+import { convertUtterancesToJson, convertUtterancesToText, poll } from "@/lib/utils";
 import { GladiaResponse } from "@/lib/types";
 import { db } from "@/server/db/db";
 import { file, transcription } from "@/server/db/schema";
@@ -45,14 +45,14 @@ export const POST = async (req: NextRequest) => {
 			},
 		} = gladiaResult;
 
-		const transcript = convertUtterancesToText(utterances);
+        const transcript = convertUtterancesToJson(utterances);
+        
+		await db.insert(transcription).values({ fileId: fileId, transcript: transcript });
 
-		await db.insert(transcription).values({ fileId: fileId, text: transcript });
-
-		await db.update(file).set({ uploadStatus: "SUCCESS" }).where(eq(file.id, fileId));
-
+        
 		return NextResponse.json({}, { status: 200 });
 	} catch (e) {
+        console.log(e);
 		await db.update(file).set({ uploadStatus: "FAILED" }).where(eq(file.id, fileId));
 		return NextResponse.json({}, { status: 400 });
 	}
