@@ -24,24 +24,17 @@ export const DELETE = async (req: NextRequest) => {
 		let file: fileType | null = null;
 		file = await api.file.getUserFile({ id: String(id) });
 
-		if(!file){
+		if (!file) {
 			throw new TRPCError({ code: "NOT_FOUND" });
 		}
 
 		const uploadThing = new UTApi();
-		const pineconeIndex = pineconeClient.index("pdfspace");
 
 		const { success } = await uploadThing.deleteFiles(file.key);
 
 		if (!success) {
 			throw new Error("Failed to delete file");
 		}
-
-		console.log(file.id.toString());
-
-		await pineconeIndex.namespace(file.id.toString()).deleteAll();
-
-		//await pineconeIndex._deleteOne(file.id.toString());
 
 		await api.file.deleteFile({ id: String(id) });
 
