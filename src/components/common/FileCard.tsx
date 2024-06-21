@@ -13,16 +13,46 @@ import "react-pdf/dist/Page/TextLayer.css";
 import { Button } from "../ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { useToast } from "../ui/use-toast";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+  } from "../ui/dialog";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+
+type ModalProps = {
+	isOpen: boolean;
+	name: string;
+	summary: string | null;
+	handleStateChange: () => void;
+}
+
+const FileSummaryModal = ({isOpen, name, summary, handleStateChange}: ModalProps) => {
+	return <Dialog open={isOpen} onOpenChange={handleStateChange}>
+		<DialogContent>
+		<DialogHeader>
+			<DialogTitle className="truncate max-w-md">Summary - {name}</DialogTitle>
+			<DialogDescription>
+				{summary}
+			</DialogDescription>
+			</DialogHeader>
+		</DialogContent>
+	</Dialog>
+};
 
 type Props = {
 	file: fileType;
 };
 
-const FileCard = ({ file }: Props) => {
+const FileCard = ({ file }: Props) => {	
+	const videoImage = "https://www.svgrepo.com/show/520494/video-course.svg";
+
 	const utils = api.useUtils();
 	const { toast } = useToast();
 	const [isPdfPreviewLoaded, setIsPdfPreviewLoaded] = useState(false);
+	const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
 
 	const { mutateAsync: deleteFile } = useMutation({
 		mutationFn: async ({ id }: { id: number }) => {
@@ -63,13 +93,17 @@ const FileCard = ({ file }: Props) => {
 		await deleteFile({ id: file.id });
 	};
 
+	const toggleModal = () => {
+		setIsSummaryModalOpen((prev) => !prev);
+	}
+
 	return (
 		<li className="min-[500px]:w-[150px] sm:min-w-[200px] sm:max-w-[200px] md:max-w-[250px] md:min-w-[250px] mr-2 mb-2 border-border border-2 col-span-1 text-card-foreground rounded-lg bg-card overflow-hidden">
 			<div className="hidden sm:flex h-[140px] -mt-1 relative border-b-[1px] border-border overflow-hidden w-full justify-center items-center bg-muted">
 				<Document
 					loading={
 						<div className="">
-							<img className="w-auto h-auto" src="https://www.svgrepo.com/show/66745/pdf.svg" />
+							<img className="w-auto h-auto" src={videoImage} />
 						</div>
 					}
 					onLoadSuccess={() => {
@@ -82,7 +116,7 @@ const FileCard = ({ file }: Props) => {
 					className="max-h-full max-w-full mt-14">
 					{!isPdfPreviewLoaded ? (
 						<div className="">
-							<img src="https://www.svgrepo.com/show/66745/pdf.svg" />
+							<img src={videoImage} />
 						</div>
 					) : (
 						<Page className="rounded-xl" width={200} pageNumber={1} scale={1} renderTextLayer={false} />
@@ -109,6 +143,9 @@ const FileCard = ({ file }: Props) => {
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="start">
+							<DropdownMenuItem className="text-white outline-none" onClick={toggleModal} disabled={!file.summary}>
+								Summary
+							</DropdownMenuItem>
 							<DropdownMenuItem className="text-red-500 outline-none" onClick={deleteRecord}>
 								Delete
 							</DropdownMenuItem>
@@ -116,6 +153,13 @@ const FileCard = ({ file }: Props) => {
 					</DropdownMenu>
 				</div>
 			</div>
+
+			<FileSummaryModal
+				isOpen={isSummaryModalOpen}
+				name={file.name}
+				summary={file.summary}
+				handleStateChange={toggleModal}
+			/>
 		</li>
 	);
 };
