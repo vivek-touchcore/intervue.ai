@@ -29,6 +29,7 @@ export const transcription = pgTable('transcription', {
     id: uuid('id').defaultRandom().primaryKey(),
     transcript: jsonb('transcript').$type<Transcript[]>(),
     fileId: serial('file_id').references(() => file.id),
+    transcriptId: text('transcript_id')
 })
 
 export type fileType = typeof file.$inferSelect;

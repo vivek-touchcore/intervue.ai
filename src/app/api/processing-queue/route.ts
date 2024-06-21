@@ -8,11 +8,6 @@ import { eq } from "drizzle-orm";
 import { model } from "@/lib/genAI";
 import { Client } from "@upstash/qstash";
 
-const qstashClient = new Client({
-	token: process.env.QSTASH_TOKEN!,
-});
-
-
 export const POST = async (req: NextRequest) => {
 	const { url, access_token, id: fileId }: { url: string; access_token: string; id: number } = await req.json();
 	const supabase = createClient();
@@ -31,42 +26,16 @@ export const POST = async (req: NextRequest) => {
 		body: JSON.stringify({
 			audio_url: url,
 			diarization: true,
+			callback_url: `${process.env.NEXT_PUBLIC_URL}/api/generate-summary`,
 		}),
 	};
 
 	try {
 		const response = await fetch("https://api.gladia.io/v2/transcription", options);
 		const { id, result_url }: { id: string; result_url: string } = await response.json();
-
-		const checkCondition = (data: GladiaResponse) => data.status === "done";
-
-		const gladiaResult = await poll<GladiaResponse>(
-			result_url,
-			{ method: "GET", headers: headers },
-			checkCondition
-		);
-
-		const {
-			result: {
-				transcription: { utterances },
-			},
-		} = gladiaResult;
-
-		const transcript = convertUtterancesToJson(utterances);
-
-		const transciptions = await db.insert(transcription).values({ fileId: fileId, transcript: transcript }).returning();
-
-        await qstashClient.publishJSON({
-				url: `${process.env.NEXT_PUBLIC_URL}/api/generate-summary`,
-				body: {
-					access_token: access_token,
-					fileId: fileId,
-                    transcriptionId: transciptions[0].id
-				},
-				method: "POST",
-				retries: 0
-			});
-
+		console.log("response_id for gladia", id);
+		
+		await db.insert(transcription).values({ fileId: fileId, transcriptId: id })
 		return NextResponse.json({}, { status: 200 });
 	} catch (e) {
 		console.log(e);

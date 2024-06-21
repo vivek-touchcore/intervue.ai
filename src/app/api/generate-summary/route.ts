@@ -1,32 +1,38 @@
 import { model } from "@/lib/genAI";
 import { createClient } from "@/lib/supabase/server";
+import { Utterance } from "@/lib/types";
+import { convertUtterancesToJson } from "@/lib/utils";
 import { db } from "@/server/db/db";
 import { transcription, file } from "@/server/db/schema";
 import { and, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
+type TranscriptionSuccessEvent = {
+	id: string;
+	payload: {
+		transcription: {
+			utterances: Utterance[];
+		};
+	};
+};
+
 export const POST = async (req: NextRequest) => {
-	const {
-		access_token,
-		fileId,
-		transcriptionId,
-	}: { access_token: string; fileId: number; transcriptionId: string } = await req.json();
-	const supabase = createClient();
-	const { data, error } = await supabase.auth.getUser(access_token);
-	if (error || !data.user) {
-		throw new Error("Unauthroized");
+	const bodyJson: TranscriptionSuccessEvent = await req.json();
+
+	const transcriptionRes = await db.query.transcription.findFirst({
+		where: (transcription, { eq }) => eq(transcription.transcriptId, bodyJson.id),
+	});
+
+	if (!transcriptionRes) {
+		return NextResponse.json({}, { status: 200 });
 	}
 
 	try {
-
-        const transcription = await db.query.transcription.findFirst({where: (transcription, {eq}) => and(eq(transcription.id, transcriptionId), eq(transcription.fileId, fileId))});
-
-        if(!transcription || !transcription.transcript){
-            throw new Error("Transcription not found");
-        }
+		const transcript = convertUtterancesToJson(bodyJson.payload.transcription.utterances);
+		await db.update(transcription).set({ transcript }).where(eq(transcription.id, transcriptionRes.id));
 
 		let summary = "";
-		for(const trans of transcription.transcript){
+		for (const trans of transcript) {
 			summary += `SPEAKER ${trans.speaker} | ${trans.startTime}\n${trans.text}\n`;
 		}
 
@@ -96,15 +102,21 @@ export const POST = async (req: NextRequest) => {
 			],
 		});
 
-		const chatResult = await chat.sendMessage("Please provide the summary of the candidate based on the above values in markdown format in same format as defined above. Also keep the format as much read able as you can with more spacing and lines.");
+		const chatResult = await chat.sendMessage(
+			"Please provide the summary of the candidate based on the above values in fell formatted markdown in same format as defined above."
+		);
 		const res = chatResult.response;
 		const text = res.text();
 
-		await db.update(file).set({ summary: text, uploadStatus: "SUCCESS" }).where(eq(file.id, fileId));
+		await db
+			.update(file)
+			.set({ summary: text, uploadStatus: "SUCCESS" })
+			.where(eq(file.id, transcriptionRes.fileId));
+			
 		return NextResponse.json({}, { status: 200 });
 	} catch (e) {
 		console.log(e);
-		await db.update(file).set({ uploadStatus: "FAILED" }).where(eq(file.id, fileId));
+		await db.update(file).set({ uploadStatus: "FAILED" }).where(eq(file.id, transcriptionRes.fileId));
 		return NextResponse.json({}, { status: 400 });
 	}
 };
