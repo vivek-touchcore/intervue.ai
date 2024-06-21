@@ -1,4 +1,3 @@
-import { pineconeClient } from "@/lib/pinecone";
 import { createClient } from "@/lib/supabase/server";
 import { fileType } from "@/server/db/schema";
 import { api } from "@/trpc/server";
