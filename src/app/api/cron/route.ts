@@ -1,4 +1,3 @@
-import { pineconeClient } from "@/lib/pinecone";
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { UTApi } from "uploadthing/server";
@@ -12,7 +11,6 @@ export async function GET() {
 			return NextResponse.json({ result: "no expired files" }, { status: 200 });
 		}
 
-		const pineconeIndex = pineconeClient.index("pdfspace");
 
 		const uploadThing = new UTApi();
 
@@ -22,9 +20,6 @@ export async function GET() {
 			throw new Error("Failed to delete file");
 		}
 
-		for (const f of data) {
-			await pineconeIndex.namespace(f.id.toString()).deleteAll();
-		}
 
 		await supabase
 			.from("file")
