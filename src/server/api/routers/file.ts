@@ -25,7 +25,6 @@ export const fileRouter = createTRPCRouter({
 			throw new TRPCError({ code: "NOT_FOUND" });
 		}
 
-
 		await db.delete(file).where(eq(file.id, Number(id)));
 		return fileResult;
 	}),
@@ -37,9 +36,12 @@ export const fileRouter = createTRPCRouter({
 			where: (file, { eq }) => and(eq(file.userId, user.id), eq(file.id, Number(id))),
 		});
 
-		await db.update(file).set({
-			lastOpenedAt: new Date()
-		}).where(and(eq(file.userId, user.id), eq(file.id, Number(id))));
+		await db
+			.update(file)
+			.set({
+				lastOpenedAt: new Date(),
+			})
+			.where(and(eq(file.userId, user.id), eq(file.id, Number(id))));
 
 		if (!fileResult) {
 			throw new TRPCError({ code: "NOT_FOUND" });
@@ -73,5 +75,25 @@ export const fileRouter = createTRPCRouter({
 		}
 
 		return { status: file.uploadStatus };
+	}),
+	getFileSummary: privateProcedure.input(z.object({ id: z.string() })).query(async ({ input, ctx }) => {
+		const { db, user } = ctx;
+		const { id } = input;
+
+		const fileResult = await db.query.file.findFirst({
+			where: (file, { eq }) => and(eq(file.userId, user.id), eq(file.id, Number(id))),
+		});
+
+		await db
+			.update(file)
+			.set({
+				lastOpenedAt: new Date(),
+			})
+			.where(and(eq(file.userId, user.id), eq(file.id, Number(id))));
+
+		if (!fileResult) {
+			throw new TRPCError({ code: "NOT_FOUND" });
+		}
+		return {summary: fileResult.summary};
 	}),
 });

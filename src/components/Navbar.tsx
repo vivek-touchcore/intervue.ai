@@ -17,7 +17,7 @@ const Navbar = async () => {
 			<div className="px-14">
 				<div className="flex h-14 items-center justify-between">
 					<Link href="/" className="flex z-40 font-semibold">
-						Sphere<span className="text-red-500">.</span>
+						Intervue<span className="text-red-500">.</span>ai
 					</Link>
 					<div className="hidden items-center space-x-4 sm:flex">
 						<>

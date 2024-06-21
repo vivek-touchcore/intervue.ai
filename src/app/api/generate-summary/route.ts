@@ -52,7 +52,7 @@ export const POST = async (req: NextRequest) => {
 					role: "user",
 					parts: [
 						{
-							text: `Values of the candidate to look at: 
+							text: `Format of the response: 
                                 \n----------------\n
                                 Candidate Summary:
                                 {Provide a brief summary of the candidate based on their interview performance.}
@@ -91,12 +91,12 @@ export const POST = async (req: NextRequest) => {
 				},
 				{
 					role: "user",
-					parts: [{ text: "" }],
+					parts: [{ text: summary }],
 				},
 			],
 		});
 
-		const chatResult = await chat.sendMessage("Please provide the summary of the candidate in markdown format");
+		const chatResult = await chat.sendMessage("Please provide the summary of the candidate based on the above values in markdown format in same format as deifned above");
 		const res = chatResult.response;
 		const text = res.text();
 

@@ -5,7 +5,6 @@ import { Cloud, File, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Fragment, useState } from "react";
 import Dropzone from "react-dropzone";
-import { pdfjs } from "react-pdf";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 import { Progress } from "./ui/progress";
@@ -16,7 +15,7 @@ const UploadDropzone = () => {
 	const router = useRouter();
 	const [isUploading, setIsUploading] = useState(false);
 	const [uploadProgress, setUploadProgress] = useState(0);
-	const [fileUrl, setFileUrl] = useState('');
+	const [fileUrl, setFileUrl] = useState("");
 	const { toast } = useToast();
 
 	const { startUpload } = useUploadThing("fileUploader", {
@@ -30,7 +29,7 @@ const UploadDropzone = () => {
 				});
 			}
 			setIsUploading(false);
-			// router.push(`/dashboard/${file.serverData.id}`);
+			router.push(`/dashboard/${file.serverData.id}`);
 		},
 		onUploadError: (error) => {
 			setIsUploading(false);
@@ -54,17 +53,6 @@ const UploadDropzone = () => {
 				onDrop={async (acceptedFile) => {
 					setIsUploading(true);
 					await startUpload(acceptedFile);
-					// const data = await analysePdf(acceptedFile[0]);
-					// if (data < 15) {
-					// 	// await startUpload(acceptedFile);
-					// } else {
-					// 	setIsUploading(false);
-					// 	toast({
-					// 		variant: "destructive",
-					// 		title: "File upload failed",
-					// 		description: "Pfd file exceeds page limit of 15 pages. Please select a smaller file",
-					// 	});
-					// }
 				}}
 			>
 				{({ getRootProps, getInputProps, acceptedFiles }) => (
@@ -101,18 +89,17 @@ const UploadDropzone = () => {
 											value={uploadProgress}
 											className="h-1 w-full bg-background"
 										/>
-										{uploadProgress === 0 && (
-											<div className="flex gap-1 items-center justify-center text-sm text-muted-foreground text-center pt-2">
-												<Loader2 className="h-3 w-3 animate-spin" />
-												Analyzing...
-											</div>
-										)}
 										{uploadProgress === 100 ? (
 											<div className="flex gap-1 items-center justify-center text-sm text-muted-foreground text-center pt-2">
 												<Loader2 className="h-3 w-3 animate-spin" />
 												Redirecting...
 											</div>
-										) : null}
+										) : (
+											<div className="flex gap-1 items-center justify-center text-sm text-muted-foreground text-center pt-2">
+												<Loader2 className="h-3 w-3 animate-spin" />
+												Uploading...
+											</div>
+										)}
 									</div>
 								) : null}
 								<input {...getInputProps()} type="file" id="dropzone-file" className="hidden" />

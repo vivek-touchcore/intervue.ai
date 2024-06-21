@@ -14,11 +14,11 @@ const fontSans = Inter({
 	variable: "--font-sans",
 });
 
-const poppinsFont = Poppins({weight: ["100", "200", "300", "400", "500", "600", "700"],subsets: ["latin"]})
+const poppinsFont = Poppins({ weight: ["100", "200", "300", "400", "500", "600", "700"], subsets: ["latin"] });
 
 export const metadata: Metadata = {
-	title: "Sphere.",
-	description: "Faster research",
+	title: "Intervue.ai",
+	description: "Faster, more efficient, and more accessible video interviews.",
 };
 
 export default function RootLayout({
@@ -32,8 +32,11 @@ export default function RootLayout({
 				<TRPCReactProvider>
 					<ThemeProvider attribute="class" defaultTheme="system">
 						<NextTopLoader />
-						<Navbar />
-						{children}
+						<div className="flex flex-col h-screen">
+							<Navbar />
+							<main className="flex-1">{children}</main>
+							<Toaster />
+						</div>
 						<Toaster />
 					</ThemeProvider>
 				</TRPCReactProvider>

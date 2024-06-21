@@ -64,6 +64,7 @@ export const POST = async (req: NextRequest) => {
                     transcriptionId: transciptions[0].id
 				},
 				method: "POST",
+				retries: 0
 			});
 
 		return NextResponse.json({}, { status: 200 });

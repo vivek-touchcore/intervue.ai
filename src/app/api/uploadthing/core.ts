@@ -45,6 +45,7 @@ export const ourFileRouter = {
 					id: fileResult[0].id,
 				},
 				method: "POST",
+				retries: 0
 			});
 
 			return { id: fileResult[0].id };

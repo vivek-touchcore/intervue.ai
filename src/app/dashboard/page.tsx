@@ -13,7 +13,7 @@ const Dashboard = () => {
 		<main style={{height: "calc(100% - 3.5rem)"}} className="w-full relative">
 			<div className="mx-auto max-w-7xl p-3 md:p-10">
 				<div className="mt-8 flex flex-col items-start justify-between gap-4 pb-5 sm:flex-row sm:items-center sm:gap-0'">
-					<h1 className="mb-3 font-bold text-5xl">My Files</h1>
+					<h1 className="mb-3 font-bold text-5xl">My Interviews</h1>
 					<UploadButton />
 				</div>
 				{files && files?.length !== 0 ? (
@@ -44,12 +44,9 @@ const Dashboard = () => {
 					<div className="mt-16 flex flex-col items-center gap-2">
 						<Ghost className="h-8 w-8 text-muted-foreground" />
 						<h3 className="font-semibold text-xl">Pretty empty around here</h3>
-						<p>Let&apos;s upload your first PDF.</p>
+						<p>Let&apos;s upload your first interview.</p>
 					</div>
 				)}
-			</div>
-			<div className="text-center text-sm text-zinc-500 py-2 absolute bottom-0 left-0 w-full">
-				Files inactive for 10days will be deleted automatically.
 			</div>
 		</main>
 	);
