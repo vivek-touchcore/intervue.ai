@@ -19,7 +19,7 @@ export default function Home() {
 				Get Started <ArrowRight className="ml-2 h-5 w-5" />
 			</Link>
 			<div className="mt-14 border-8 border-border rounded-xl">
-				<img alt="dashboard" src="/dashboard_dark.png" className="rounded-lg" />
+				<img alt="dashboard" src="/new_dashboard_dark.png" className="rounded-lg" />
 			</div>
 			<div className="mt-14">
 				<h2 className="max-w-4xl text-2xl md:text-3xl lg:text-4xl font-bold">
