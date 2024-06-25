@@ -32,11 +32,9 @@ export default function RootLayout({
 				<TRPCReactProvider>
 					<ThemeProvider attribute="class" defaultTheme="system">
 						<NextTopLoader />
-						<div className="flex flex-col h-screen">
-							<Navbar />
-							<main className="flex-1">{children}</main>
-							<Toaster />
-						</div>
+						<Navbar />
+						{children}
+						<Toaster />
 						<Toaster />
 					</ThemeProvider>
 				</TRPCReactProvider>

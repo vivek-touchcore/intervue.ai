@@ -23,7 +23,7 @@ const VideoTranscription = ({ file }: VideoTabProps) => {
 		);
 
 	return (
-		<div className="flex flex-col h-full">
+		<div className="flex-1 flex flex-col">
 			<div className="m-2 flex justify-center items-center">
 				<Player ref={playerRef} src={file.url} />
 			</div>

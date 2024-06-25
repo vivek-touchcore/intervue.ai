@@ -19,10 +19,8 @@ const Page = async ({ params: { fileid } }: Props) => {
 
 	return (
 		<ContextWrapper fileId={file.id.toString()}>
-			<div className="flex flex-1 h-full">
-				<div className="flex-1 h-full">
-					<VideoTab file={file} />
-				</div>
+			<div className="flex h-[calc(100vh-3.5rem)]">
+				<VideoTab file={file} />
 				<Sections file={file} />
 			</div>
 		</ContextWrapper>

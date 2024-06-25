@@ -26,7 +26,7 @@ const FileSummaryModal = ({ isOpen, name, summary, handleStateChange }: ModalPro
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle className="truncate max-w-md">Summary - {name}</DialogTitle>
-					<DialogDescription className="">
+					<DialogDescription className="h-[500px] overflow-y-auto pt-3">
 						<ReactMarkdown>{summary}</ReactMarkdown>
 					</DialogDescription>
 				</DialogHeader>
