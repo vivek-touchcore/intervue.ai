@@ -1,12 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+export const maxDuration = 60;
+
 import { createClient } from "@/lib/supabase/server";
-import { chunkArray, convertUtterancesToJson, convertUtterancesToText, poll } from "@/lib/utils";
-import { GladiaResponse } from "@/lib/types";
 import { db } from "@/server/db/db";
 import { file, transcription } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
-import { model } from "@/lib/genAI";
-import { Client } from "@upstash/qstash";
+import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest) => {
 	const { url, access_token, id: fileId }: { url: string; access_token: string; id: number } = await req.json();
