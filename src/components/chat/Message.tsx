@@ -37,7 +37,7 @@ const Message = forwardRef<HTMLDivElement, Props>(({ message, isNextMessageSameP
 						<span className="text-blue-500">Me</span>
 					) : (
 						<span className="text-zinc-500">
-							sphere<span className="text-red-500">.</span>
+							intervue<span className="text-red-500">.</span>
 						</span>
 					)}
 					<span className="text-muted-foreground text-sm">{format(new Date(message.createdAt), "HH:mm")}</span>
