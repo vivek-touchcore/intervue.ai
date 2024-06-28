@@ -103,7 +103,7 @@ export const POST = async (req: NextRequest) => {
 		});
 
 		const chatResult = await chat.sendMessage(
-			"Please provide the summary of the candidate based on the above values in well formatted markdown in same format of response as defined above."
+			"Please provide the summary of the candidate based on the above values in same format of response as defined above."
 		);
 		const res = chatResult.response;
 		const text = res.text();
