@@ -103,7 +103,7 @@ export const POST = async (req: NextRequest) => {
 		});
 
 		const chatResult = await chat.sendMessage(
-			"Please provide the summary of the candidate based on the above values in same format of response as defined above."
+			"Please provide the summary of the candidate based on the above values in same format of response as defined above. Please give back response in mardown format without more white spaces. Bold headings and words where necessary."
 		);
 		const res = chatResult.response;
 		const text = res.text();
